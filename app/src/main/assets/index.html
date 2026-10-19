@@ -56,6 +56,29 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:pointer}
 .mini.buy{background:var(--sun);border-color:var(--sun-deep);color:var(--ink)}
 .mini[disabled]{opacity:.5;cursor:not-allowed}
 .stat{font-weight:700;color:var(--leaf-deep)}
+.ctl{position:absolute;bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:2;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.ctl.left{left:max(12px,env(safe-area-inset-left,0px))}
+.ctl.right{right:max(12px,env(safe-area-inset-right,0px))}
+.joy{width:clamp(100px,24vmin,150px);height:clamp(100px,24vmin,150px);border-radius:50%;position:relative;cursor:grab;touch-action:none;
+  background:radial-gradient(circle,rgba(255,253,246,.28) 0 30%,rgba(29,74,43,.5) 70%);border:3px solid rgba(255,253,246,.88);box-shadow:inset 0 0 0 6px rgba(255,253,246,.12)}
+.joy::before{content:"";position:absolute;inset:18%;border-radius:50%;border:2px dashed rgba(255,253,246,.45)}
+.knob{position:absolute;left:28%;top:28%;width:44%;height:44%;border-radius:50%;pointer-events:none;transition:transform .12s ease-out;
+  background:radial-gradient(circle at 35% 30%,#fff1c2,#f6b93b 55%,#d9941a);box-shadow:0 4px 0 rgba(0,0,0,.28),inset 0 -3px 0 rgba(0,0,0,.12)}
+.joy.on{cursor:grabbing}.joy.on .knob{transition:none}
+.dpad{width:clamp(100px,24vmin,150px);height:clamp(100px,24vmin,150px);position:relative;cursor:pointer;touch-action:none}
+.dpad .arm,.dpad .mid{position:absolute;background:rgba(29,74,43,.58);pointer-events:none}
+.dpad .arm{border:3px solid rgba(255,253,246,.88);color:#fff;display:flex;align-items:center;justify-content:center;font:700 clamp(14px,3.6vmin,22px) var(--body)}
+.arm.u{left:33%;top:0;width:34%;height:39%;border-bottom:none;border-radius:12px 12px 0 0}
+.arm.d{left:33%;bottom:0;width:34%;height:39%;border-top:none;border-radius:0 0 12px 12px}
+.arm.l{top:33%;left:0;height:34%;width:39%;border-right:none;border-radius:12px 0 0 12px}
+.arm.r{top:33%;right:0;height:34%;width:39%;border-left:none;border-radius:0 12px 12px 0}
+.dpad .mid{left:33%;top:33%;width:34%;height:34%}
+.dpad .mid::after{content:"";position:absolute;inset:28%;border-radius:50%;background:rgba(255,253,246,.35)}
+.arm.on{background:rgba(246,185,59,.94);color:#22301d}
+@media (max-height:540px){
+  h1{font-size:22px} header{gap:4px 10px} .wrap{gap:6px;padding-block:6px}
+  .chip,.sound,.menu,.pause{font-size:12px;padding:3px 9px;min-width:0}
+}
 .card #pv{width:220px;height:140px;background:linear-gradient(#bfe6f2,#e4f4f8);border-radius:16px;border:3px solid #cfe3c9}
 .row.tight{gap:6px}
 .shop-row .nm{line-height:1.3}
@@ -75,6 +98,8 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:pointer}
   </header>
   <div class="stage" id="stage">
     <canvas id="cv" aria-label="টুনটুনির দৌড় খেলা"></canvas>
+    <div class="ctl left" id="ctlL" hidden><div class="joy" id="joy" role="slider" aria-label="জয়স্টিক: টেনে টুনটুনিকে ওড়াও"><div class="knob" id="knob"></div></div></div>
+    <div class="ctl right" id="ctlR" hidden><div class="dpad" id="dpad" aria-label="দিক-বোতাম"><div class="arm u">▲</div><div class="arm d">▼</div><div class="arm l">◀</div><div class="arm r">▶</div><div class="mid"></div></div></div>
     <div class="card" id="card"><div class="box" id="box"></div></div>
   </div>
 </div>
@@ -91,8 +116,8 @@ const FONT='"Hind Siliguri","Noto Sans Bengali",sans-serif';
 let scale=1;
 
 function resize(){
-  const availW=Math.min(wrap.clientWidth-32,960);
-  const availH=window.innerHeight-hdr.offsetHeight-36;
+  const availW=Math.min(wrap.clientWidth-32,1400);
+  const availH=window.innerHeight-hdr.offsetHeight-(window.innerHeight<=540?14:28);
   let w=availW,h=w*H/W;
   if(h>availH){h=Math.max(availH,200);w=h*W/H;}
   stage.style.width=w+'px';stage.style.height=h+'px';
@@ -173,13 +198,13 @@ const SCENE=['গ্রামের পথে টুনটুনি টাকা
  'সন্ধ্যা নামছে রাজবাড়িতে।','জোনাকির আলোয় নদীর পাড়।','দুর্গের পর দুর্গ, বাজপাখিরা তৈরি!','রাতের অন্ধকারে রাজপ্রাসাদের পাশ দিয়ে পথ।'];
 const CFG=Array.from({length:30},(_,i)=>{
   const coins=20+i;
-  return {len:3000+i*110,speed:Math.min(210,95+i*4),coins,need:Math.round(coins*(.5+.32*i/29)),
+  return {len:3000+i*110,speed:Math.min(265,Math.round((95+i*4)*1.25)),coins,need:Math.round(coins*(.5+.32*i/29)),
     walk:Math.min(11,2+Math.floor(i/3)),thr:i<3?0:Math.min(6,Math.floor((i-3)/4)+1),
     walls:i<1?0:Math.min(12,Math.floor(i*.42)+1),gap:i<1?0:Math.max(150,Math.round(250-i*3.5)),
     reach:Math.min(240,130+i*5),netSp:180+i*3,cd:Math.max(1.8,3.6-i*.06),
     wordLens:i<4?[2]:i<9?[2,3]:i<16?[3]:i<23?[3,4]:[4,3],
     tileSp:60+i*1.8,tileEvery:Math.max(.65,1-i*.012),steal:i<6?2:i<18?3:4,
-    forts:i<2?0:Math.min(5,1+Math.floor((i-2)/5)),eagles:i<2?0:i<7?1:i<17?2:3,eagleSp:150+i*4,
+    forts:i<2?0:Math.min(5,1+Math.floor((i-2)/5)),eagles:i<2?0:i<7?1:i<17?2:3,eagleSp:Math.round((150+i*4)*1.15),
     theme:i===LAST?11:i%12,name:NAMES[i]};
 });
 CFG.forEach((c,i)=>{
@@ -245,6 +270,33 @@ addEventListener('keydown',e=>{
   if(e.key==='p'||e.key==='P'||e.key==='Escape'){if(phase==='play'||phase==='caught'){setPause(!paused);e.preventDefault();}return;}
   if(paused)return;if(KM[e.key]&&phase==='play'){keys.add(KM[e.key]);pointer.has=false;e.preventDefault();}});
 addEventListener('keyup',e=>{if(KM[e.key])keys.delete(KM[e.key]);});
+
+/* ---------- game-pad: thumb joystick (left) and D-pad (right), finger or mouse ---------- */
+const ctlL=document.getElementById('ctlL'),ctlR=document.getElementById('ctlR');
+const joy=document.getElementById('joy'),knob=document.getElementById('knob'),dpad=document.getElementById('dpad');
+const arms={u:dpad.querySelector('.arm.u'),d:dpad.querySelector('.arm.d'),l:dpad.querySelector('.arm.l'),r:dpad.querySelector('.arm.r')};
+let joyVec={x:0,y:0},padVec={x:0,y:0},joyId=null,padId=null;
+function joyAt(e){
+  const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,R=r.width*.34;
+  let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy);if(d>R){dx*=R/d;dy*=R/d;}
+  knob.style.transform=`translate(${dx}px,${dy}px)`;joyVec={x:dx/R,y:dy/R};pointer.has=false;
+}
+function joyEnd(){joyId=null;joyVec={x:0,y:0};knob.style.transform='';joy.classList.remove('on');}
+joy.addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();joyId=e.pointerId;try{joy.setPointerCapture(e.pointerId)}catch(_){ }joy.classList.add('on');joyAt(e);});
+joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)joyAt(e);});
+['pointerup','pointercancel','lostpointercapture'].forEach(n=>joy.addEventListener(n,e=>{if(e.pointerId===joyId)joyEnd();}));
+function padAt(e){
+  const r=dpad.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
+  let x=0,y=0;
+  if(Math.hypot(dx,dy)>r.width*.1){const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4;x=Math.round(Math.cos(a));y=Math.round(Math.sin(a));}
+  const m=Math.hypot(x,y)||1;padVec={x:x/m,y:y/m};pointer.has=false;
+  arms.u.classList.toggle('on',y<0);arms.d.classList.toggle('on',y>0);arms.l.classList.toggle('on',x<0);arms.r.classList.toggle('on',x>0);
+}
+function padEnd(){padId=null;padVec={x:0,y:0};Object.values(arms).forEach(a=>a.classList.remove('on'));}
+dpad.addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();padId=e.pointerId;try{dpad.setPointerCapture(e.pointerId)}catch(_){ }padAt(e);});
+dpad.addEventListener('pointermove',e=>{if(e.pointerId===padId)padAt(e);});
+['pointerup','pointercancel','lostpointercapture'].forEach(n=>dpad.addEventListener(n,e=>{if(e.pointerId===padId)padEnd();}));
+[joy,dpad].forEach(el=>el.addEventListener('contextmenu',e=>e.preventDefault()));
 
 /* ---------- state ---------- */
 let lv=0,C=CFG[0],phase='menu',t=0,camX=0,maxCam=0;
@@ -384,12 +436,14 @@ function showSettings(){
    <p class="stat">খেলার ধরন</p>
    <div class="row"><button class="mini ${easy?'buy':''}" id="mEasy" type="button">সহজ (৩–৬ বছর)</button><button class="mini ${easy?'':'buy'}" id="mNorm" type="button">স্বাভাবিক</button></div>
    <p>সহজ মোডে পথ ধীর, সেপাই আর বাজপাখি কম, দরকারি টাকাও কম।</p>
+   <p class="stat">জয়স্টিক ও দিক-বোতাম</p>
+   <div class="row"><button class="mini" id="pTog" type="button">${save.pad===false?'বোতাম: বন্ধ':'বোতাম: চালু'}</button></div>
    <p class="stat">বাংলা কণ্ঠ</p>
    <div class="row"><button class="mini" id="vTog" type="button" ${hasVoice()?'':'disabled'}>${save.voice?'কণ্ঠ: চালু':'কণ্ঠ: বন্ধ'}</button></div>
    <p>${hasVoice()?'গল্প, শব্দ আর মজার কথাগুলো বাংলায় শোনাবে।':'এই ডিভাইসে বাংলা কণ্ঠ পাওয়া যায়নি। অন্য ফোন বা কম্পিউটারে চালু হতে পারে।'}</p>
    <div class="row"><button class="btn alt" id="back" type="button">ফিরে যাও</button></div>`,
    {mEasy:()=>{save.mode='easy';persist();showSettings();},mNorm:()=>{save.mode='normal';persist();showSettings();},
-    vTog:()=>{save.voice=!save.voice;persist();showSettings();if(save.voice)say('বাংলা কণ্ঠ চালু হলো');},back:showMenu});
+    pTog:()=>{save.pad=save.pad===false;persist();showSettings();},vTog:()=>{save.voice=!save.voice;persist();showSettings();if(save.voice)say('বাংলা কণ্ঠ চালু হলো');},back:showMenu});
 }
 function showHow(){
   panel(`<h2>কীভাবে খেলবে</h2>
@@ -558,10 +612,11 @@ function floatText(x,y,txt,c,size=24){floats.push({x,y,txt,c,life:1.2,size});}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 function steer(dt){
-  const sp=pw.speed>0?430:300;let dx=0,dy=0;
-  if(keys.size){
-    dx=(keys.has('r')?1:0)-(keys.has('l')?1:0);dy=(keys.has('d')?1:0)-(keys.has('u')?1:0);
-    const m=Math.hypot(dx,dy)||1;bird.x+=dx/m*sp*dt;bird.y+=dy/m*sp*dt;
+  const sp=pw.speed>0?530:380;let dx=0,dy=0;
+  let vx=joyVec.x+padVec.x+(keys.has('r')?1:0)-(keys.has('l')?1:0),vy=joyVec.y+padVec.y+(keys.has('d')?1:0)-(keys.has('u')?1:0);
+  const vm=Math.hypot(vx,vy);
+  if(vm>.12){
+    const k=Math.min(1,vm)/vm;bird.x+=vx*k*sp*dt;bird.y+=vy*k*sp*dt;dx=vx;
   }else if(pointer.has){
     const ddx=pointer.x-bird.x,ddy=pointer.y-bird.y,d=Math.hypot(ddx,ddy);
     if(d>2){const s=Math.min(d*6,sp);bird.x+=ddx/d*s*dt;bird.y+=ddy/d*s*dt;dx=ddx;}
@@ -708,7 +763,7 @@ function update(dt){
         // patrol, drifting toward the bird when close
         const toward=bx-g.x;
         if(Math.abs(toward)<260&&sx<W)g.dir=toward>0?1:-1;
-        g.x+=g.dir*(38+lv*7)*dt;g.walk+=dt*8;
+        g.x+=g.dir*(38+lv*7)*1.2*dt;g.walk+=dt*8;
         if(g.x>g.home+110)g.dir=-1;if(g.x<g.home-110)g.dir=1;
         // don't walk into walls
         walls.forEach(w=>{if(g.x>w.x-22&&g.x<w.x+w.w+22){g.x=g.x<w.x+w.w/2?w.x-22:w.x+w.w+22;g.dir*=-1;}});
@@ -1017,7 +1072,7 @@ function powerHud(){
   if(pw.shield)on.push('পালক');
   if(friend&&friend.t>0)on.push(`কাক ${bn(Math.ceil(friend.t))}`);
   if(frog&&frog.t>0)on.push(`ব্যাঙ ${bn(Math.ceil(frog.t))}`);
-  if(on.length)pill(12,H-48,on.join(' · '),'#2f5fa8');
+  if(on.length)pill(12,catches>0?92:52,on.join(' · '),'#2f5fa8');
   if(boss&&boss.state==='in')pill(W-250,52,`সেনাপতি · মৌচাক বাকি ${bn(boss.hp)}`,'#c8442f');
 }
 function drawNet(n){
@@ -1178,7 +1233,8 @@ function draw(){
     drawBird(W/2,H/2-104,1,1,t*2,false,true);
   }
   const showP=phase==='play'||phase==='caught';if(pauseBtn.hidden===showP)pauseBtn.hidden=!showP;
-  if(!paused&&phase==='play'&&camX<60){ctx.fillStyle='rgba(29,74,43,.85)';rr(W/2-150,H-46,300,32,16);ctx.fill();ctx.fillStyle='#fff';ctx.font=`700 16px ${FONT}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('ডানদিকে উড়ে চলো, টাকা ধরো!',W/2,H-30);}
+  const showPad=phase==='play'&&!paused&&save.pad!==false;if(ctlL.hidden===showPad){ctlL.hidden=!showPad;ctlR.hidden=!showPad;if(!showPad){joyEnd();padEnd();}}
+  if(!paused&&phase==='play'&&camX<60){ctx.fillStyle='rgba(29,74,43,.85)';rr(W/2-170,H-46,340,32,16);ctx.fill();ctx.fillStyle='#fff';ctx.font=`700 16px ${FONT}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('ডানদিকে উড়ে চলো, টাকা ধরো!',W/2,H-30);}
 }
 
 let last=performance.now();
