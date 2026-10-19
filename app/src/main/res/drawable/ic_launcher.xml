@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App icon: Tuntuni the tailorbird on a sunny circle -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <path android:fillColor="#F6B93B" android:pathData="M54,2A52,52 0 1,1 54,106A52,52 0 1,1 54,2Z"/>
+    <path android:fillColor="#7CC35B" android:pathData="M8,74Q54,60 100,74A52,52 0 0,1 8,74Z"/>
+    <path android:fillColor="#6F8F2C" android:pathData="M42,58L24,30L30,28L48,52Z"/>
+    <path android:fillColor="#8FAE3E" android:pathData="M30,58A22,16 0 1,0 74,58A22,16 0 1,0 30,58Z"/>
+    <path android:fillColor="#F4ECD2" android:pathData="M42,64A13,8 0 1,0 68,64A13,8 0 1,0 42,64Z"/>
+    <path android:fillColor="#8FAE3E" android:pathData="M56,44A11,11 0 1,0 78,44A11,11 0 1,0 56,44Z"/>
+    <path android:fillColor="#C8692B" android:pathData="M56,44A11,11 0 0,1 78,44Z"/>
+    <path android:fillColor="#5B3D22" android:pathData="M76,42L90,45L76,48Z"/>
+    <path android:fillColor="#1A1A1A" android:pathData="M68,44A3,3 0 1,0 74,44A3,3 0 1,0 68,44Z"/>
+</vector>
