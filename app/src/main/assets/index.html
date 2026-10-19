@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="bn"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html,body{height:100%}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
 </head><body>
 <title>টুনটুনি আর রাজা</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -56,29 +56,22 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:pointer}
 .mini.buy{background:var(--sun);border-color:var(--sun-deep);color:var(--ink)}
 .mini[disabled]{opacity:.5;cursor:not-allowed}
 .stat{font-weight:700;color:var(--leaf-deep)}
-.ctl{position:absolute;bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:2;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
-.ctl.left{left:max(12px,env(safe-area-inset-left,0px))}
-.ctl.right{right:max(12px,env(safe-area-inset-right,0px))}
-.joy{width:clamp(100px,24vmin,150px);height:clamp(100px,24vmin,150px);border-radius:50%;position:relative;cursor:grab;touch-action:none;
-  background:radial-gradient(circle,rgba(255,253,246,.28) 0 30%,rgba(29,74,43,.5) 70%);border:3px solid rgba(255,253,246,.88);box-shadow:inset 0 0 0 6px rgba(255,253,246,.12)}
-.joy::before{content:"";position:absolute;inset:18%;border-radius:50%;border:2px dashed rgba(255,253,246,.45)}
-.knob{position:absolute;left:28%;top:28%;width:44%;height:44%;border-radius:50%;pointer-events:none;transition:transform .12s ease-out;
-  background:radial-gradient(circle at 35% 30%,#fff1c2,#f6b93b 55%,#d9941a);box-shadow:0 4px 0 rgba(0,0,0,.28),inset 0 -3px 0 rgba(0,0,0,.12)}
-.joy.on{cursor:grabbing}.joy.on .knob{transition:none}
-.dpad{width:clamp(100px,24vmin,150px);height:clamp(100px,24vmin,150px);position:relative;cursor:pointer;touch-action:none}
-.dpad .arm,.dpad .mid{position:absolute;background:rgba(29,74,43,.58);pointer-events:none}
-.dpad .arm{border:3px solid rgba(255,253,246,.88);color:#fff;display:flex;align-items:center;justify-content:center;font:700 clamp(14px,3.6vmin,22px) var(--body)}
-.arm.u{left:33%;top:0;width:34%;height:39%;border-bottom:none;border-radius:12px 12px 0 0}
-.arm.d{left:33%;bottom:0;width:34%;height:39%;border-top:none;border-radius:0 0 12px 12px}
-.arm.l{top:33%;left:0;height:34%;width:39%;border-right:none;border-radius:12px 0 0 12px}
-.arm.r{top:33%;right:0;height:34%;width:39%;border-left:none;border-radius:0 12px 12px 0}
-.dpad .mid{left:33%;top:33%;width:34%;height:34%}
-.dpad .mid::after{content:"";position:absolute;inset:28%;border-radius:50%;background:rgba(255,253,246,.35)}
-.arm.on{background:rgba(246,185,59,.94);color:#22301d}
 @media (max-height:540px){
   h1{font-size:22px} header{gap:4px 10px} .wrap{gap:6px;padding-block:6px}
   .chip,.sound,.menu,.pause{font-size:12px;padding:3px 9px;min-width:0}
 }
+body.compact .wrap{padding:0;gap:0}
+body.compact header{position:fixed;bottom:max(8px,env(safe-area-inset-bottom,0px));right:max(8px,env(safe-area-inset-right,0px));width:auto;max-width:none;z-index:6;flex-wrap:nowrap}
+body.compact h1,body.compact .chip{display:none}
+body.compact .tools{gap:6px}
+body.compact .pause,body.compact .menu,body.compact .sound{display:none}
+.burger{display:none}
+body.compact .burger{display:flex;width:44px;height:44px;border-radius:12px;align-items:center;justify-content:center;font:700 22px var(--body);padding:0;cursor:pointer;
+  background:rgba(255,253,246,.9);border:2px solid var(--leaf);color:var(--leaf-deep);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.quick{position:absolute;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(max(8px,env(safe-area-inset-bottom,0px)) + 54px);z-index:7;display:flex;flex-direction:column;gap:8px;
+  background:var(--paper);border:3px solid var(--leaf);border-radius:16px;padding:10px;box-shadow:0 6px 18px rgba(0,0,0,.25);min-width:150px}
+.quick .mini{font-size:15px;padding:8px 12px}
+body.compact .stage{border-radius:0;box-shadow:none}
 .card #pv{width:220px;height:140px;background:linear-gradient(#bfe6f2,#e4f4f8);border-radius:16px;border:3px solid #cfe3c9}
 .row.tight{gap:6px}
 .shop-row .nm{line-height:1.3}
@@ -94,19 +87,23 @@ canvas{display:block;width:100%;height:100%;touch-action:none;cursor:pointer}
       <button class="pause" id="pause" type="button" aria-pressed="false" hidden>❚❚ বিরতি</button>
       <button class="menu" id="menu" type="button">স্তর তালিকা</button>
       <button class="sound" id="sound" type="button">শব্দ: চালু</button>
+      <button class="burger" id="burger" type="button" aria-label="মেনু খোলো" aria-expanded="false">☰</button>
     </div>
   </header>
   <div class="stage" id="stage">
     <canvas id="cv" aria-label="টুনটুনির দৌড় খেলা"></canvas>
-    <div class="ctl left" id="ctlL" hidden><div class="joy" id="joy" role="slider" aria-label="জয়স্টিক: টেনে টুনটুনিকে ওড়াও"><div class="knob" id="knob"></div></div></div>
-    <div class="ctl right" id="ctlR" hidden><div class="dpad" id="dpad" aria-label="দিক-বোতাম"><div class="arm u">▲</div><div class="arm d">▼</div><div class="arm l">◀</div><div class="arm r">▶</div><div class="mid"></div></div></div>
+    <div class="quick" id="quick" hidden>
+      <button class="mini buy" id="qResume" type="button">▶ খেলায় ফেরো</button>
+      <button class="mini" id="qMenu" type="button">স্তর তালিকা</button>
+      <button class="mini" id="qSound" type="button">শব্দ: চালু</button>
+    </div>
     <div class="card" id="card"><div class="box" id="box"></div></div>
   </div>
 </div>
 
 <script>
 (function(){
-const W=800,H=500,GY=444;
+let W=800;const H=500,GY=444; // W follows the screen's shape; height stays 500 game units
 const cv=document.getElementById('cv');let ctx=cv.getContext('2d');
 const stage=document.getElementById('stage'),wrap=document.getElementById('wrap'),hdr=document.getElementById('hdr');
 const card=document.getElementById('card'),box=document.getElementById('box'),lvchip=document.getElementById('lvchip');
@@ -116,13 +113,20 @@ const FONT='"Hind Siliguri","Noto Sans Bengali",sans-serif';
 let scale=1;
 
 function resize(){
-  const availW=Math.min(wrap.clientWidth-32,1400);
-  const availH=window.innerHeight-hdr.offsetHeight-(window.innerHeight<=540?14:28);
+  // Phones in landscape (and the Android app) use the whole screen; the game widens to the screen's exact shape.
+  const phone=(window.innerHeight<=560&&window.innerWidth>window.innerHeight)||!!window.AndroidTTS;
+  document.body.classList.toggle('compact',phone);
+  let availW,availH;
+  if(phone){availW=wrap.clientWidth;availH=wrap.clientHeight;}
+  else{availW=Math.min(wrap.clientWidth-32,1600);availH=window.innerHeight-hdr.offsetHeight-28;}
+  availH=Math.max(availH,200);
+  W=Math.round(H*Math.max(1.3,Math.min(2.4,availW/availH)));
   let w=availW,h=w*H/W;
-  if(h>availH){h=Math.max(availH,200);w=h*W/H;}
+  if(h>availH){h=availH;w=h*W/H;}
   stage.style.width=w+'px';stage.style.height=h+'px';
-  const dpr=window.devicePixelRatio||1;
+  const dpr=Math.min(3,window.devicePixelRatio||1);
   cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);scale=cv.width/W;
+  if(typeof C!=='undefined'&&C)maxCam=Math.max(0,C.len-W);
 }
 addEventListener('resize',resize);
 
@@ -155,17 +159,28 @@ const sfx={
   screech(){tone(2400,.35,'sawtooth',.05,1300);setTimeout(()=>tone(2200,.25,'sawtooth',.04,1500),200)},
   fail(){[392,330,262].forEach((f,i)=>setTimeout(()=>tone(f,.22,'triangle',.13),i*170))}
 };
-document.getElementById('sound').onclick=e=>{muted=!muted;e.currentTarget.textContent=muted?'শব্দ: বন্ধ':'শব্দ: চালু';};
+document.getElementById('sound').onclick=()=>{muted=!muted;soundLabel();};
 document.getElementById('menu').onclick=()=>{ensureAudio();showMenu();};
 const pauseBtn=document.getElementById('pause');
+const burger=document.getElementById('burger'),quick=document.getElementById('quick');
 let paused=false;
 function setPause(v){
   if(v&&!(phase==='play'||phase==='caught'))return;
   paused=v;pauseBtn.textContent=paused?'▶ চালাও':'❚❚ বিরতি';pauseBtn.setAttribute('aria-pressed',String(paused));
   keys.clear();pointer.down=false;
+  if(!v&&quick){quick.hidden=true;burger.setAttribute('aria-expanded','false');}
   if(v){try{speechSynthesis.cancel()}catch(e){}try{window.AndroidTTS&&AndroidTTS.stop()}catch(e){}}
 }
 pauseBtn.onclick=()=>{ensureAudio();setPause(!paused);};
+function soundLabel(){const t=muted?'শব্দ: বন্ধ':'শব্দ: চালু';document.getElementById('sound').textContent=t;document.getElementById('qSound').textContent=t;}
+burger.onclick=()=>{
+  ensureAudio();
+  if(quick.hidden){if(phase==='play'||phase==='caught')setPause(true);soundLabel();quick.hidden=false;burger.setAttribute('aria-expanded','true');}
+  else{quick.hidden=true;burger.setAttribute('aria-expanded','false');if(paused)setPause(false);}
+};
+document.getElementById('qResume').onclick=()=>{quick.hidden=true;burger.setAttribute('aria-expanded','false');if(paused)setPause(false);};
+document.getElementById('qMenu').onclick=()=>{quick.hidden=true;showMenu();};
+document.getElementById('qSound').onclick=()=>{muted=!muted;soundLabel();};
 document.addEventListener('visibilitychange',()=>{if(document.hidden)setPause(true);});
 function ensureAudio(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}} if(ac&&ac.state==='suspended')ac.resume();}
 
@@ -270,33 +285,6 @@ addEventListener('keydown',e=>{
   if(e.key==='p'||e.key==='P'||e.key==='Escape'){if(phase==='play'||phase==='caught'){setPause(!paused);e.preventDefault();}return;}
   if(paused)return;if(KM[e.key]&&phase==='play'){keys.add(KM[e.key]);pointer.has=false;e.preventDefault();}});
 addEventListener('keyup',e=>{if(KM[e.key])keys.delete(KM[e.key]);});
-
-/* ---------- game-pad: thumb joystick (left) and D-pad (right), finger or mouse ---------- */
-const ctlL=document.getElementById('ctlL'),ctlR=document.getElementById('ctlR');
-const joy=document.getElementById('joy'),knob=document.getElementById('knob'),dpad=document.getElementById('dpad');
-const arms={u:dpad.querySelector('.arm.u'),d:dpad.querySelector('.arm.d'),l:dpad.querySelector('.arm.l'),r:dpad.querySelector('.arm.r')};
-let joyVec={x:0,y:0},padVec={x:0,y:0},joyId=null,padId=null;
-function joyAt(e){
-  const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,R=r.width*.34;
-  let dx=e.clientX-cx,dy=e.clientY-cy;const d=Math.hypot(dx,dy);if(d>R){dx*=R/d;dy*=R/d;}
-  knob.style.transform=`translate(${dx}px,${dy}px)`;joyVec={x:dx/R,y:dy/R};pointer.has=false;
-}
-function joyEnd(){joyId=null;joyVec={x:0,y:0};knob.style.transform='';joy.classList.remove('on');}
-joy.addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();joyId=e.pointerId;try{joy.setPointerCapture(e.pointerId)}catch(_){ }joy.classList.add('on');joyAt(e);});
-joy.addEventListener('pointermove',e=>{if(e.pointerId===joyId)joyAt(e);});
-['pointerup','pointercancel','lostpointercapture'].forEach(n=>joy.addEventListener(n,e=>{if(e.pointerId===joyId)joyEnd();}));
-function padAt(e){
-  const r=dpad.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);
-  let x=0,y=0;
-  if(Math.hypot(dx,dy)>r.width*.1){const a=Math.round(Math.atan2(dy,dx)/(Math.PI/4))*Math.PI/4;x=Math.round(Math.cos(a));y=Math.round(Math.sin(a));}
-  const m=Math.hypot(x,y)||1;padVec={x:x/m,y:y/m};pointer.has=false;
-  arms.u.classList.toggle('on',y<0);arms.d.classList.toggle('on',y>0);arms.l.classList.toggle('on',x<0);arms.r.classList.toggle('on',x>0);
-}
-function padEnd(){padId=null;padVec={x:0,y:0};Object.values(arms).forEach(a=>a.classList.remove('on'));}
-dpad.addEventListener('pointerdown',e=>{e.preventDefault();ensureAudio();padId=e.pointerId;try{dpad.setPointerCapture(e.pointerId)}catch(_){ }padAt(e);});
-dpad.addEventListener('pointermove',e=>{if(e.pointerId===padId)padAt(e);});
-['pointerup','pointercancel','lostpointercapture'].forEach(n=>dpad.addEventListener(n,e=>{if(e.pointerId===padId)padEnd();}));
-[joy,dpad].forEach(el=>el.addEventListener('contextmenu',e=>e.preventDefault()));
 
 /* ---------- state ---------- */
 let lv=0,C=CFG[0],phase='menu',t=0,camX=0,maxCam=0;
@@ -436,14 +424,12 @@ function showSettings(){
    <p class="stat">খেলার ধরন</p>
    <div class="row"><button class="mini ${easy?'buy':''}" id="mEasy" type="button">সহজ (৩–৬ বছর)</button><button class="mini ${easy?'':'buy'}" id="mNorm" type="button">স্বাভাবিক</button></div>
    <p>সহজ মোডে পথ ধীর, সেপাই আর বাজপাখি কম, দরকারি টাকাও কম।</p>
-   <p class="stat">জয়স্টিক ও দিক-বোতাম</p>
-   <div class="row"><button class="mini" id="pTog" type="button">${save.pad===false?'বোতাম: বন্ধ':'বোতাম: চালু'}</button></div>
    <p class="stat">বাংলা কণ্ঠ</p>
    <div class="row"><button class="mini" id="vTog" type="button" ${hasVoice()?'':'disabled'}>${save.voice?'কণ্ঠ: চালু':'কণ্ঠ: বন্ধ'}</button></div>
    <p>${hasVoice()?'গল্প, শব্দ আর মজার কথাগুলো বাংলায় শোনাবে।':'এই ডিভাইসে বাংলা কণ্ঠ পাওয়া যায়নি। অন্য ফোন বা কম্পিউটারে চালু হতে পারে।'}</p>
    <div class="row"><button class="btn alt" id="back" type="button">ফিরে যাও</button></div>`,
    {mEasy:()=>{save.mode='easy';persist();showSettings();},mNorm:()=>{save.mode='normal';persist();showSettings();},
-    pTog:()=>{save.pad=save.pad===false;persist();showSettings();},vTog:()=>{save.voice=!save.voice;persist();showSettings();if(save.voice)say('বাংলা কণ্ঠ চালু হলো');},back:showMenu});
+    vTog:()=>{save.voice=!save.voice;persist();showSettings();if(save.voice)say('বাংলা কণ্ঠ চালু হলো');},back:showMenu});
 }
 function showHow(){
   panel(`<h2>কীভাবে খেলবে</h2>
@@ -613,7 +599,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 
 function steer(dt){
   const sp=pw.speed>0?530:380;let dx=0,dy=0;
-  let vx=joyVec.x+padVec.x+(keys.has('r')?1:0)-(keys.has('l')?1:0),vy=joyVec.y+padVec.y+(keys.has('d')?1:0)-(keys.has('u')?1:0);
+  let vx=(keys.has('r')?1:0)-(keys.has('l')?1:0),vy=(keys.has('d')?1:0)-(keys.has('u')?1:0);
   const vm=Math.hypot(vx,vy);
   if(vm>.12){
     const k=Math.min(1,vm)/vm;bird.x+=vx*k*sp*dt;bird.y+=vy*k*sp*dt;dx=vx;
@@ -732,6 +718,7 @@ function update(dt){
   if(bird.inv>0)bird.inv-=dt;
 
   const prevCam=camX;
+  maxCam=Math.max(0,C.len-W);
   camX=Math.min(maxCam,camX+C.speed*dt);
   const scrolled=camX-prevCam;
   steer(dt);
@@ -849,13 +836,13 @@ const THEMES=[
  {sky:['#1d2650','#46508c'],hill:'#2e3b6a',hill2:'#24305a',ground:'#3f6e45',stripe:'#36603c',sun:'#fff4c2',deco:'palace',night:true}
 ];
 function cloud(x,y,s,c){ctx.fillStyle=c;[[0,0,26],[24,-10,30],[52,0,24],[26,8,26]].forEach(([a,b,r])=>{ctx.beginPath();ctx.arc(x+a*s,y+b*s,r*s,0,Math.PI*2);ctx.fill();});}
-const STARS=Array.from({length:40},(_,i)=>[(i*197)%W,(i*83)%220+10,(i%3)+1]);
+const STARS=Array.from({length:110},(_,i)=>[(i*197)%2400,(i*83)%220+10,(i%3)+1]);
 const rep=(par,per)=>{const o=((camX*par)%per+per)%per;const xs=[];for(let x=-o-per;x<W+per;x+=per)xs.push(x);return xs;};
 function background(){
   const T=THEMES[C.theme];
   const g=ctx.createLinearGradient(0,0,0,GY);g.addColorStop(0,T.sky[0]);g.addColorStop(1,T.sky[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  if(T.night){STARS.forEach(([x,y,r])=>{ctx.globalAlpha=.5+.5*Math.sin(t*2+x);circ(x,y,r*.8,'#fff');});ctx.globalAlpha=1;circ(680,70,30,T.sun);circ(692,62,26,T.sky[0]);}
-  else if(T.sun){circ(680,70,36,T.sun);}
+  if(T.night){STARS.forEach(([x,y,r])=>{if(x>W)return;ctx.globalAlpha=.5+.5*Math.sin(t*2+x);circ(x,y,r*.8,'#fff');});ctx.globalAlpha=1;circ(W-120,70,30,T.sun);circ(W-108,62,26,T.sky[0]);}
+  else if(T.sun){circ(W-120,70,36,T.sun);}
   const cc=T.night?'rgba(255,255,255,.12)':T.deco==='rain'?'rgba(90,100,115,.85)':'rgba(255,255,255,.9)';
   const nc=T.deco==='rain'?7:4;
   for(let i=0;i<nc;i++){const x=((i*(1040/nc)-camX*.15)%1040+1040)%1040-120;cloud(x,50+(i%2)*45,.8+(i%3)*.2,cc);}
@@ -1229,11 +1216,10 @@ function draw(){
     ctx.fillStyle='rgba(20,30,20,.5)';ctx.fillRect(0,0,W,H);
     ctx.fillStyle='#fffdf6';rr(W/2-190,H/2-80,380,150,22);ctx.fill();ctx.strokeStyle='#2f6b3f';ctx.lineWidth=4;ctx.stroke();
     ctx.fillStyle='#c8442f';ctx.font=`400 48px "Galada",${FONT}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('বিরতি',W/2,H/2-30);
-    ctx.fillStyle='#22301d';ctx.font=`700 17px ${FONT}`;ctx.fillText('পর্দায় ছুঁয়ে দাও বা “চালাও” চাপো',W/2,H/2+22);
+    ctx.fillStyle='#22301d';ctx.font=`700 17px ${FONT}`;ctx.fillText(document.body.classList.contains('compact')?'পর্দায় ছুঁয়ে দাও বা “খেলায় ফেরো” চাপো':'পর্দায় ছুঁয়ে দাও বা “চালাও” চাপো',W/2,H/2+22);
     drawBird(W/2,H/2-104,1,1,t*2,false,true);
   }
   const showP=phase==='play'||phase==='caught';if(pauseBtn.hidden===showP)pauseBtn.hidden=!showP;
-  const showPad=phase==='play'&&!paused&&save.pad!==false;if(ctlL.hidden===showPad){ctlL.hidden=!showPad;ctlR.hidden=!showPad;if(!showPad){joyEnd();padEnd();}}
   if(!paused&&phase==='play'&&camX<60){ctx.fillStyle='rgba(29,74,43,.85)';rr(W/2-170,H-46,340,32,16);ctx.fill();ctx.fillStyle='#fff';ctx.font=`700 16px ${FONT}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('ডানদিকে উড়ে চলো, টাকা ধরো!',W/2,H-30);}
 }
 
